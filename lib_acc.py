@@ -18,7 +18,8 @@ class everett():
         new = TODAY+relativedelta(weekday=MO)
         self.query_date = new.strftime("%A, %B %d, %Y")
         self.year, self.month, self.day = new.year, new.month, new.day
-    
+        
+ """   Deprecated Method
     def time_range(self,start,stop,year,month,day):
         time_list = []
         time_id = 's18022_'
@@ -28,6 +29,24 @@ class everett():
         datetime_list = [datetime.strptime(item, '%Y-%m-%d %H:%M:%S.%f') for item in time_str_list]
         unix_list = [int(time.mktime(item.timetuple())) for item in datetime_list]
         self.id_list = [time_id+str(item) for item in unix_list]
+        print(self.id_list)
+ """
+
+    def time_range(start,stop,year,month,day):
+        range_list = []
+        #ID Assigned to each room
+        room_id = 's18022_'
+        #Create a list of alternating hour:0 and hour:30 to fill all time slots in range
+        [(range_list.append((item,0)),range_list.append((item,30))) for item in range(start,stop+1)]
+        #Remove last item in range_list because reserving on and ending on whole hours is desired
+        #The range_list above creates an lasthour:30 which needs to be removed
+        range_list=range_list[:-1]
+        #Convert  range_list items into formatted datetime objects
+        datetime_list = [datetime(year,month,day,item[0],item[1]) for item in range_list]
+        #Convert datetime objects into timestamps
+        timestamp_list = [int(time.mktime(item.timetuple())) for item in datetime_list]
+        #Append room_id to the beginning of each timestamp as this is the format the website has
+        self.id_list = [room_id+str(item) for item in timestamp_list]
         print(self.id_list)
         
     def click_all(self):
