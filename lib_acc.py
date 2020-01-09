@@ -4,15 +4,30 @@ from datetime import datetime
 from webbot import Browser
 import calendar
 import time
+import csv
 
 class everett():
     def __init__(self,start,stop,url,room,d_bug=False):
         self.d_bug = d_bug
+        self.pull_login()
         self.website_url = url
         next = self.next_calendar_date()
-        ts_list = self.timestamp_range(start,stop,next[0],next[1],next[2])
-        self.id_list = self.build_ids(room_id=room,timestamps=ts_list)
-
+        ts_list = self.timestamp_range(int(self.room_text[0]),
+                                       int(self.room_text[1]),
+                                       next[0],
+                                       next[1],
+                                       next[2])
+        self.id_list = self.build_ids(room_id=str(self.room_text[2]),timestamps=ts_list)
+        
+    def pull_login(self):
+        with open("login.txt") as login_file:
+            room_text = next(csv.reader(login_file))
+            login_text = next(csv.reader(login_file))
+            print(room_text)
+            print(login_text)
+        self.room_text = room_text
+        self.login_info = login_text
+        
     def next_calendar_date(self):
         TODAY = date.today()
         new = TODAY+relativedelta(weekday=MO)
@@ -53,25 +68,26 @@ class everett():
         el_taken=[]
         for id_ in self.id_list:
             try:
-                if web.exists("input",id=id_):
+                if (web.exists("input",id=id_) and len(el_free) <= 7):
                     el_free.append(id_)
                     web.click("input",id=id_)
                 else:
                     el_taken.append(id_)
-                    print("Bad Time Slot {}".format(id_))
             except:
                 print("Bad Time Slot {}".format(id_))
+        print("Taken Time Slots {}".format(el_taken))
         if self.d_bug:
             print("click loop, {} good, {} bad".format(len(el_free),len(el_taken)))
 
-    def ucf_login(self,first,last,email,status,pid,non_test=None):
+    def ucf_login(self,non_test=None):
+        login_info = self.login_info
         print("login")
-        web.type(first, into="First Name")
-        web.type(last, into="Last Name")
-        web.type(email, into="email")
+        web.type(login_info[0], into="First Name")
+        web.type(login_info[1], into="Last Name")
+        web.type(login_info[2], into="email")
         web.type("nick", into="Group Name")
-        web.click(status)
-        web.type(pid, into="UCFID")
+        web.click("Undergraduate Student")
+        web.type(login_info[3], into="UCFID")
         if non_test:
             web.click("Submit my Booking")
 
@@ -83,7 +99,7 @@ if __name__ == "__main__":
     #Go through all the login boxes and submit request for the room
     #***Must include non_test=True if you want the script to reserve the room***
     website_url = 'https://ucf.libcal.com/spaces/accessible/2824'
-    scraper = everett(9,18,website_url,'s18022_')
+    scraper = everett(17,18,website_url,'s18022_')
     web = Browser()
     web.go_to(scraper.website_url)
     web.click(scraper.query_date)
@@ -91,10 +107,6 @@ if __name__ == "__main__":
     scraper.click_all()
     web.click("Submit Times")
     web.click("Continue")
-    scraper.ucf_login("Everett",
-                  "Periman",
-                  "ejpman@knights.ucf.edu",
-                  "Undergraduate Student",
-                  "3815000")
+    scraper.ucf_login()
     time.sleep(10)
     web.close_current_tab()
