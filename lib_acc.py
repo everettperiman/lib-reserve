@@ -49,13 +49,20 @@ class everett():
         return id_list
 
     def click_all(self):
+        el_free=[]
+        el_taken=[]
         for id_ in self.id_list:
             try:
-                web.click("input",id=id_)
+                if web.exists("input",id=id_):
+                    el_free.append(id_)
+                    web.click("input",id=id_)
+                else:
+                    el_taken.append(id_)
+                    print("Bad Time Slot {}".format(id_))
             except:
                 print("Bad Time Slot {}".format(id_))
         if self.d_bug:
-            print("click loop")
+            print("click loop, {} good, {} bad".format(len(el_free),len(el_taken)))
 
     def ucf_login(self,first,last,email,status,pid,non_test=None):
         print("login")
@@ -76,7 +83,7 @@ if __name__ == "__main__":
     #Go through all the login boxes and submit request for the room
     #***Must include non_test=True if you want the script to reserve the room***
     website_url = 'https://ucf.libcal.com/spaces/accessible/2824'
-    scraper = everett(9,12,website_url,'s18022_',d_bug=True)
+    scraper = everett(9,18,website_url,'s18022_')
     web = Browser()
     web.go_to(scraper.website_url)
     web.click(scraper.query_date)
