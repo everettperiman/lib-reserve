@@ -83,7 +83,7 @@ if __name__ == "__main__":
     #Hour Calls are out of 24 and can only reserve whole hours i.e(9:00-12:00)
     scraper = everett(9,12,website_url,'s18022_')
     #Init browser object
-    web = Browser()
+    web = Browser(showWindow=False)
     #Goto website
     web.go_to(scraper.website_url)
     #Select next date from drop down box
