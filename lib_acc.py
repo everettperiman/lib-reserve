@@ -44,7 +44,7 @@ class everett():
         web.type("nick", into="Group Name")
         web.click(status)
         web.type(pid, into="UCFID")    
-        web.click("Submit my Booking")
+        # web.click("Submit my Booking")
                      
 if __name__ == "__main__":
     website_url = 'https://ucf.libcal.com/spaces/accessible/2824'
