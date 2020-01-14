@@ -7,7 +7,7 @@ import time
 import csv
 
 class everett():
-    def __init__(self,start,stop,url,room,d_bug=False):
+    def __init__(self,url,d_bug=False):
         self.d_bug = d_bug
         self.pull_login()
         self.website_url = url
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     #Go through all the login boxes and submit request for the room
     #***Must include non_test=True if you want the script to reserve the room***
     website_url = 'https://ucf.libcal.com/spaces/accessible/2824'
-    scraper = everett(17,18,website_url,'s18022_')
+    scraper = everett(website_url,'s18022_')
     web = Browser()
     web.go_to(scraper.website_url)
     web.click(scraper.query_date)
